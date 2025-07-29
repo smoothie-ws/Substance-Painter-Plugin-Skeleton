@@ -33,7 +33,7 @@ class UI:
             return sp.ui.get_layout(mode)
         
         @staticmethod 
-        def set(layout: bytes):# -> Any:
+        def set(layout: bytes):
             return sp.ui.set_layout(layout)
 
     @staticmethod
@@ -66,7 +66,7 @@ class UI:
         return UI.add_widget(sp.ui.add_menu(menu))
 
     @staticmethod
-    def add_action(menu: sp.ui.ApplicationMenu, action: QtGui.QAction) -> QtWidgets.QWidget:
+    def add_action(menu: sp.ui.ApplicationMenu, action: QtWidgets.QAction) -> QtWidgets.QWidget:
         return UI.add_widget(sp.ui.add_action(menu, action))
 
     @staticmethod

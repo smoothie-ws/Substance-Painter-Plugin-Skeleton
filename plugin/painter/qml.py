@@ -46,7 +46,7 @@ class QmlView(QtCore.QObject):
 
     # common slots
     @QtCore.Slot(str, result=str)
-    def js(self, code: str) -> str | None:
+    def js(self, code: str) -> str:
         try:
             return json.dumps(sp.js.evaluate(code))
         except Exception as e:
