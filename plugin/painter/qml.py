@@ -1,19 +1,18 @@
 import json
 import substance_painter as sp
 
-# qt5 vs qt6 check
-if sp.application.version_info() < (10, 1, 0):
-    from PySide2 import QtQuickWidgets, QtWidgets, QtCore, QtGui
-else:
-    from PySide6 import QtQuickWidgets, QtWidgets, QtCore, QtGui
-
 from .log import Log
 from .path import Path
-
+from .ui import QtQuickWidgets, QtWidgets, QtCore, QtGui
 
 class QmlView(QtCore.QObject):
     "Bridge class between Python and QML"
 
+    @classmethod
+    def from_plugin_file(cls, path: str, *args, **kwargs):
+        kwargs["path"] = Path.join(Path.plugin, "view", path)
+        return cls(*args, **kwargs)
+    
     def __init__(self, name: str = "Plugin", path: str = None):
         super().__init__()
         self.name = name
@@ -43,7 +42,7 @@ class QmlView(QtCore.QObject):
             self.view.statusChanged.connect(start)
             self.view.setSource(QtCore.QUrl.fromLocalFile(path))
         else:
-            raise Exception(f'File {path} does not exist')
+            Log.error(f'File {path} does not exist')
 
     # common slots
     @QtCore.Slot(str, result=str)
@@ -68,9 +67,6 @@ class QmlView(QtCore.QObject):
 
         
 class QmlWindow(QmlView):
-    opened = QtCore.Signal()
-    closed = QtCore.Signal()
-    
     def __init__(self, title: str, icon: QtGui.QIcon = None, name: str = "Plugin", path: str = None):
         self.window = QtWidgets.QMainWindow(
             parent=sp.ui.get_main_window(),
@@ -89,6 +85,9 @@ class QmlWindow(QmlView):
             event.accept()
             
         self.window.closeEvent = on_closed
+    
+    opened = QtCore.Signal()
+    closed = QtCore.Signal()
     
     def load(self, path: str, callback = None):
         def cb(container: QtWidgets.QWidget):

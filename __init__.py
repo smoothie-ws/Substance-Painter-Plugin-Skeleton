@@ -1,9 +1,10 @@
-from .src.plugin import Plugin, Path
+from .plugin import PythonPlugin
+from .plugin.painter import Path
 
 
 def start_plugin():
-    Plugin.start(Path.to(__file__))
+    PythonPlugin.start(Path.to(__file__))
 
 
 def close_plugin():
-    Plugin.close()
+    PythonPlugin.close()

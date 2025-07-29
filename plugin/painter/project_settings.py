@@ -26,5 +26,5 @@ class ProjectSettings:
         return default
     
     @staticmethod
-    def set(key: str, value=None) -> None:
+    def set(key: str, value) -> None:
         sp.js.evaluate(f'alg.project.settings.setValue("{key}", {json.dumps(value)})')

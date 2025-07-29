@@ -1,18 +1,18 @@
 import json
-import substance_painter as sp
 
-from .plugin import Path, Plugin
-from .plugin import QtWidgets, QmlView, QtCore
+from .painter import UI, Path, Plugin
+from .painter.qml import QtWidgets, QmlView, QtCore
 
 
-class View(QmlView):
+class DockView(QmlView):
+    "Example of the qml controller class"
+    
     def __init__(self, path: str):
         super().__init__("Plugin")
-        self.widget = None
         
         def cb(container: QtWidgets.QWidget):
             container.setWindowTitle("Python Plugin")
-            self.widget = sp.ui.add_dock_widget(container)
+            UI.add_dock(container)
 
         self.load(path, cb)
         

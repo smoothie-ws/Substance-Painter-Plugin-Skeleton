@@ -1,16 +1,19 @@
-from .bridge import Log, Path, SPPlugin
-from .controller import View
+from .painter import Log, Plugin
+from .controller import DockView
 
 
-class Plugin(SPPlugin):
+class PythonPlugin(Plugin):
+    "Your Python plugin"
+    
+    dock_view = None
+    
     @classmethod
     def start(cls, path):
-        super().start(path, "Python Plugin")
+        super().start(path, "PythonPlugin")
         
     @classmethod
     def on_start(cls):
-        dock_view = View(Path.asset("ui", "View.qml"))
-        Plugin.widgets.append(dock_view)
+        PythonPlugin.dock_view = DockView.from_plugin_file("View.qml")
     
     @classmethod
     def on_project_opened(cls):
