@@ -17,14 +17,14 @@ class QmlView(QtCore.QObject):
         super().__init__()
         self.name = name
         self.view = QtQuickWidgets.QQuickWidget()
-        self.view.setResizeMode(QtQuickWidgets.QQuickWidget.SizeRootObjectToView)
+        self.view.setResizeMode(QtQuickWidgets.QQuickWidget.ResizeMode.SizeRootObjectToView)
         
         if path is not None:
             self.load(path)
     
     def load(self, path: str, callback = None):
         def start(status: QtQuickWidgets.QQuickWidget.Status):
-            if status == QtQuickWidgets.QQuickWidget.Ready:
+            if status == QtQuickWidgets.QQuickWidget.Status.Ready:
                 if callback is not None:
                     callback(self.view)
             else:
@@ -46,23 +46,24 @@ class QmlView(QtCore.QObject):
 
     # common slots
     @QtCore.Slot(str, result=str)
-    def js(self, code: str):
+    def js(self, code: str) -> str | None:
         try:
             return json.dumps(sp.js.evaluate(code))
         except Exception as e:
             Log.error(f'Failed to evaluate js code: {str(e)}')
             Log.info(code)
+        return None
     
     @QtCore.Slot(str)
-    def info(self, msg: str):
+    def info(self, msg: str) -> None:
         Log.info(msg)
     
     @QtCore.Slot(str)
-    def warning(self, msg: str):
+    def warning(self, msg: str) -> None:
         Log.warning(msg)
 
     @QtCore.Slot(str)
-    def error(self, msg: str):
+    def error(self, msg: str) -> None:
         Log.error(msg)
 
         

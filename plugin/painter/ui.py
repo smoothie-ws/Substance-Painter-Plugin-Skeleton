@@ -16,12 +16,12 @@ class UI:
             return sp.ui.get_main_window()
 
         @staticmethod
-        def show():
+        def show() -> None:
             sp.ui.show_main_window()
 
     class Layout:
         @staticmethod
-        def reset(mode: sp.ui.UIMode):
+        def reset(mode: sp.ui.UIMode) -> None:
             sp.ui.reset_layout(mode)
 
         @staticmethod
@@ -33,21 +33,19 @@ class UI:
             return sp.ui.get_layout(mode)
         
         @staticmethod 
-        def set(layout: bytes):
+        def set(layout: bytes):# -> Any:
             return sp.ui.set_layout(layout)
 
-    @property
     @staticmethod
-    def mode():
+    def get_mode():
         return sp.ui.get_current_mode()
 
-    @mode.setter
     @staticmethod
     def set_mode(mode: sp.ui.UIMode) -> None:
         sp.ui.switch_to_mode(mode)
 
     @staticmethod
-    def add_widget(widget: QtWidgets.QWidget):
+    def add_widget(widget: QtWidgets.QWidget) -> QtWidgets.QWidget:
         UI.widgets.append(widget)
         return widget
     
@@ -60,24 +58,24 @@ class UI:
         return UI.add_widget(sp.ui.add_dock_widget(widget, ui_modes))
 
     @staticmethod
-    def add_plugins_toolbar(widget: QtWidgets.QWidget):
+    def add_plugins_toolbar(widget: QtWidgets.QWidget) -> QtWidgets.QWidget:
         return UI.add_widget(sp.ui.add_plugins_toolbar_widget(widget))
 
     @staticmethod
-    def add_menu(menu: QtWidgets.QMenu):
+    def add_menu(menu: QtWidgets.QMenu) -> QtWidgets.QWidget:
         return UI.add_widget(sp.ui.add_menu(menu))
 
     @staticmethod
-    def add_action(menu: sp.ui.ApplicationMenu, action: QtWidgets.QAction):
+    def add_action(menu: sp.ui.ApplicationMenu, action: QtGui.QAction) -> QtWidgets.QWidget:
         return UI.add_widget(sp.ui.add_action(menu, action))
 
     @staticmethod
-    def remove_widget(widget: QtWidgets.QWidget):
+    def remove_widget(widget: QtWidgets.QWidget) -> None:
         sp.ui.delete_ui_element(widget)
         UI.widgets.remove(widget)
 
     @staticmethod
-    def clear():
+    def clear() -> None:
         for widget in UI.widgets:
             UI.remove_widget(widget)
     

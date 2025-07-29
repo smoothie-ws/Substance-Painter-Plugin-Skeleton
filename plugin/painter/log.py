@@ -3,21 +3,21 @@ import substance_painter as sp
 
 
 class Log:
-    channel = "Plugin"
+    channel: str = "Plugin"
 
     @staticmethod
-    def info(msg: str):
+    def info(msg: str) -> None:
         sp.logging.log(sp.logging.INFO, Log.channel, msg)
     
     @staticmethod
-    def error(msg: str):
+    def error(msg: str) -> None:
         sp.logging.log(sp.logging.ERROR, Log.channel, msg)
     
     @staticmethod
-    def warning(msg: str):
+    def warning(msg: str) -> None:
         sp.logging.log(sp.logging.WARNING, Log.channel, msg)
 
     @staticmethod
-    def fatal():
+    def fatal() -> None:
         Log.error(traceback.format_exc())
         

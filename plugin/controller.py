@@ -7,7 +7,7 @@ from .painter.qml import QtWidgets, QmlView, QtCore
 class DockView(QmlView):
     "Example of the qml controller class"
     
-    def __init__(self, path: str):
+    def __init__(self, path: str) -> None:
         super().__init__("Plugin")
         
         def cb(container: QtWidgets.QWidget):
@@ -17,13 +17,13 @@ class DockView(QmlView):
         self.load(path, cb)
         
     @QtCore.Slot(result=str)
-    def getPluginPath(self):
+    def getPluginPath(self) -> str:
         return Path.plugin
     
     @QtCore.Slot(result=str)
-    def getPluginVersion(self):
+    def getPluginVersion(self) -> str:
         return Plugin.version
     
     @QtCore.Slot(result=str)
-    def getPluginSettings(self):
+    def getPluginSettings(self) -> str:
         return json.dumps(Plugin.settings)

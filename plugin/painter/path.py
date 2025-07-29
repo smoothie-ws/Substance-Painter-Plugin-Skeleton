@@ -5,9 +5,9 @@ import subprocess
 
 
 class Path:
-    plugin = None
-    settings = None
-    documents = None
+    plugin: str = ""
+    settings: str = ""
+    documents: str = ""
 
     @staticmethod
     def asset(*paths: list) -> str:
@@ -23,7 +23,7 @@ class Path:
     
     @staticmethod
     def exists(path: str) -> bool:
-        return path and os.path.exists(path)
+        return path is not None and os.path.exists(path)
     
     @staticmethod
     def join(*paths) -> str:
@@ -79,7 +79,7 @@ class Path:
             subprocess.run(['explorer', '/select,', path])
 
     @staticmethod
-    def read(path: str, default: str = None) -> str:
+    def read(path: str, default: str = "") -> str:
         try:
             with open(Path.norm(path), "r", encoding="utf-8") as f:
                 return f.read()

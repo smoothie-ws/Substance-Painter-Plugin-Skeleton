@@ -3,7 +3,7 @@ import substance_painter as sp
 
 class Resource:
     @staticmethod
-    def search(callback, shelf: str="", usage: str="", name: str="", retries: int = 1):
+    def search(callback, shelf: str="", usage: str="", name: str="", retries: int = 1) -> None:
         delayed = False
 
         def search_shelf():

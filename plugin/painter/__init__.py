@@ -10,18 +10,18 @@ from .project_settings import ProjectSettings
 
 
 class Plugin:
-    files = []
+    files: list[str] = []
     settings = {}
-    version = "0.0.1a"
+    version: str = "0.0.1a"
     
     @staticmethod
-    def push_file(path: str):
+    def push_file(path: str) -> None:
         if not path in Plugin.files:
             Plugin.files.append(path)
             Plugin.save()
 
     @staticmethod
-    def save():
+    def save() -> None:
         Path.write(Path.settings, json.dumps({
             "version": Plugin.version,
             "files": Plugin.files,
@@ -36,7 +36,7 @@ class Plugin:
         Path.documents = sp.js.evaluate("alg.documents_directory")
         
         try:
-            data = json.loads(Path.read(Path.settings, {}))
+            data = json.loads(Path.read(Path.settings, ""))
             Plugin.files = data.get("files", [])
             Plugin.settings = data.get("settings", {})
             Plugin.version = data.get("version", "0.0.1a")
