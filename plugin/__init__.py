@@ -1,15 +1,15 @@
-from .painter import Log, Plugin
-from .controller import DockView
+from .painter import Log, Plugin, QmlView
+from .controller import MainView
 
 
 class PythonPlugin(Plugin):
     "Your Python plugin"
     
-    dock_view: DockView = None
+    dock_view: MainView = None
     
     @classmethod
     def on_start(cls) -> None:
-        PythonPlugin.dock_view: DockView = DockView.from_plugin_file("View.qml")
+        PythonPlugin.dock_view = MainView(QmlView.view_path("View.qml"))
     
     @classmethod
     def on_project_opened(cls) -> None:

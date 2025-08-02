@@ -1,17 +1,21 @@
 import json
 import substance_painter as sp
 
+from abc import abstractmethod
+from time import localtime, strftime
+
 from .log import Log
 from .path import Path
-from .ui import QtQuickWidgets, QtWidgets, QtCore, QtGui
+from .plugin import Plugin
+from .ui import UI, QtQuickWidgets, QtWidgets, QtCore, QtGui
+
 
 class QmlView(QtCore.QObject):
     "Bridge class between Python and QML"
 
     @classmethod
-    def from_plugin_file(cls, path: str, *args, **kwargs):
-        kwargs["path"] = Path.join(Path.plugin, "view", path)
-        return cls(*args, **kwargs)
+    def view_path(cls, path: str):
+        return Path.join(Path.plugin, "view", path)
     
     def __init__(self, name: str = "Plugin", path: str = None):
         super().__init__()
@@ -46,39 +50,47 @@ class QmlView(QtCore.QObject):
 
     # common slots
     @QtCore.Slot(str, result=str)
-    def js(self, code: str) -> str:
+    def js(self, code: str):
         try:
-            return json.dumps(sp.js.evaluate(code))
-        except Exception as e:
-            Log.error(f'Failed to evaluate js code: {str(e)}')
-            Log.info(code)
-        return None
+            res = sp.js.evaluate(code)
+        except:
+            res = None
+        return json.dumps(res)
     
+    @QtCore.Slot(result=str)
+    def time(self) -> str:
+        return strftime("%H:%M:%S", localtime())
+    
+    @QtCore.Slot(str, result=str)
+    def asset(self, path: str) -> str:
+        return f'file:{Path.asset(path)}'
+    
+    @QtCore.Slot(str, result=bool)
+    def pathExists(self, path: str) -> bool:
+        return Path.exists(path)
+        
     @QtCore.Slot(str)
-    def info(self, msg: str) -> None:
+    def info(self, msg: str):
         Log.info(msg)
     
     @QtCore.Slot(str)
-    def warning(self, msg: str) -> None:
+    def warning(self, msg: str):
         Log.warning(msg)
 
     @QtCore.Slot(str)
-    def error(self, msg: str) -> None:
+    def error(self, msg: str):
         Log.error(msg)
-
         
+    
 class QmlWindow(QmlView):
     def __init__(self, title: str, icon: QtGui.QIcon = None, name: str = "Plugin", path: str = None):
-        self.window = QtWidgets.QMainWindow(
+        self.window = UI.add_window(QtWidgets.QMainWindow(
             parent=sp.ui.get_main_window(),
             flags=QtCore.Qt.WindowType.Window | 
                 QtCore.Qt.WindowType.CustomizeWindowHint | 
                 QtCore.Qt.WindowType.WindowTitleHint | 
                 QtCore.Qt.WindowType.WindowCloseButtonHint
-        )
-        self.window.setWindowIcon(icon)
-        self.window.setWindowTitle(title)
-        self.window.setWindowModality(QtCore.Qt.WindowModality.ApplicationModal)
+        ))
         super().__init__(name, path)
         
         def on_closed(event: QtGui.QCloseEvent):
@@ -86,7 +98,10 @@ class QmlWindow(QmlView):
             event.accept()
             
         self.window.closeEvent = on_closed
-    
+        self.window.setWindowIcon(icon)
+        self.window.setWindowTitle(title)
+        self.window.setWindowModality(QtCore.Qt.WindowModality.ApplicationModal)
+        
     opened = QtCore.Signal()
     closed = QtCore.Signal()
     
@@ -97,18 +112,21 @@ class QmlWindow(QmlView):
                 callback(container)
         super().load(path, cb)
 
-    def open(self):
+    def show(self):
         screen_geometry = QtWidgets.QApplication.primaryScreen().availableGeometry()
-        x = (screen_geometry.width() - self.window.width()) // 2
-        y = (screen_geometry.height() - self.window.height()) // 2
-        self.window.move(x, y)
+        self.window.move(
+            (screen_geometry.width() - self.window.width()) // 2, 
+            (screen_geometry.height() - self.window.height()) // 2
+        )
         self.window.show()
+        
+    def open(self):
+        self.show()
         self.opened.emit()
 
     @QtCore.Slot()
     def close(self):
         self.window.close()
-        self.closed.emit()
 
 
 class QmlDialog(QmlWindow):
@@ -123,8 +141,8 @@ class QmlDialog(QmlWindow):
 
     # to override
     
-    def on_confirmed(self, data: str):
-        pass
+    @abstractmethod
+    def on_confirmed(self, data: str): ...
 
-    def on_cancelled(self):
-        pass
+    @abstractmethod
+    def on_cancelled(self): ...
